@@ -1,6 +1,3 @@
-# flutter_calculator_app
-A simple calculator app built with Flutter
-
 # Flutter Calculator App
 
 A simple calculator app built with Flutter.
@@ -13,8 +10,11 @@ A simple calculator app built with Flutter.
 
 ## Screenshots
 
-![Calculator App Screenshot](calculator.jpg)
+![Calculator App Screenshot](assets/images/calculator.jpg)
 
 ## Getting Started
 
 1. Clone the repository:
+   ```sh
+   git clone https://github.com/yourusername/your-repo-name.git
+   cd your-repo-name
