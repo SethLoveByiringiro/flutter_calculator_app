@@ -7,6 +7,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'Flutter Calculator',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
       home: Calculator(),
     );
   }
@@ -14,110 +19,103 @@ class MyApp extends StatelessWidget {
 
 class Calculator extends StatefulWidget {
   @override
-  State<Calculator> createState() => _CalculatorState();
+  _CalculatorState createState() => _CalculatorState();
 }
 
 class _CalculatorState extends State<Calculator> {
-  String output = "0";
   String _output = "0";
-  double num1 = 0.0;
-  double num2 = 0.0;
-  String operand = "";
+  String _equation = "";
+  double _num1 = 0;
+  double _num2 = 0;
+  String _operand = "";
+  bool _isOperandClicked = false;
 
-  buttonPressed(String buttonText) {
-    if (buttonText == "DEL") {
-      _output = _output.substring(0, _output.length - 1);
-      if (_output.isEmpty) {
-        _output = "0";
-      }
-    } else if (buttonText == "C") {
-      _output = "0";
-      num1 = 0.0;
-      num2 = 0.0;
-      operand = "";
-    } else if (buttonText == "+/-") {
-      if (_output.startsWith("-")) {
-        _output = _output.substring(1);
-      } else {
-        _output = "-" + _output;
-      }
-    } else if (buttonText == "%") {
-      num1 = double.parse(_output.replaceAll("-", ""));
-      if (_output.startsWith("-")) {
-        num1 = -num1;
-      }
-      _output = (num1 / 100).toString();
-    } else if (buttonText == "+" ||
-        buttonText == "-" ||
-        buttonText == "×" ||
-        buttonText == "÷") {
-      num1 = double.parse(_output.replaceAll("-", ""));
-      if (_output.startsWith("-")) {
-        num1 = -num1;
-      }
-      operand = buttonText;
-      _output = "0";
-    } else if (buttonText == ".") {
-      if (_output.contains(".")) {
-        return;
-      } else {
-        _output = _output + buttonText;
-      }
-    } else if (buttonText == "=") {
-      num2 = double.parse(_output.replaceAll("-", ""));
-      if (_output.startsWith("-")) {
-        num2 = -num2;
-      }
-
-      if (operand == "+") {
-        _output = (num1 + num2).toString();
-      }
-      if (operand == "-") {
-        _output = (num1 - num2).toString();
-      }
-      if (operand == "×") {
-        _output = (num1 * num2).toString();
-      }
-      if (operand == "÷") {
-        _output = (num1 / num2).toString();
-      }
-
-      num1 = 0.0;
-      num2 = 0.0;
-      operand = "";
-    } else {
-      _output = _output + buttonText;
-    }
-
+  void _buttonPressed(String buttonText) {
     setState(() {
-      output = double.parse(_output.replaceAll("-", "")).toStringAsFixed(2);
-      if (_output.startsWith("-")) {
-        output = "-" + output;
+      if (buttonText == "C") {
+        _output = "0";
+        _equation = "";
+        _num1 = 0;
+        _num2 = 0;
+        _operand = "";
+        _isOperandClicked = false;
+      } else if (buttonText == "+" ||
+          buttonText == "-" ||
+          buttonText == "×" ||
+          buttonText == "÷") {
+        if (_operand.isNotEmpty && !_isOperandClicked) {
+          _calculate();
+        }
+        _num1 = double.parse(_output);
+        _operand = buttonText;
+        _isOperandClicked = true;
+        _equation += " $_operand ";
+      } else if (buttonText == ".") {
+        if (!_output.contains(".")) {
+          _output += buttonText;
+        }
+      } else if (buttonText == "=") {
+        _calculate();
+        _operand = "";
+        _isOperandClicked = false;
+      } else {
+        if (_isOperandClicked) {
+          _output = buttonText;
+          _isOperandClicked = false;
+        } else {
+          _output = (_output == "0") ? buttonText : _output + buttonText;
+        }
+        _equation += buttonText;
       }
     });
   }
 
-  Widget buildButton(String buttonText, Color color, Color textColor) {
+  void _calculate() {
+    _num2 = double.parse(_output);
+    switch (_operand) {
+      case "+":
+        _output = (_num1 + _num2).toString();
+        break;
+      case "-":
+        _output = (_num1 - _num2).toString();
+        break;
+      case "×":
+        _output = (_num1 * _num2).toString();
+        break;
+      case "÷":
+        _output = (_num1 / _num2).toString();
+        break;
+    }
+    _num1 = double.parse(_output);
+    _equation = _output;
+  }
+
+  Widget _buildButton(String buttonText, Color buttonColor, Color textColor) {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(2.0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: color,
+            backgroundColor: buttonColor,
+            padding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            padding: EdgeInsets.all(20.0),
-          ),
-          child: Text(
-            buttonText,
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: textColor,
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: () => buttonPressed(buttonText),
+          onPressed: () => _buttonPressed(buttonText),
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                buttonText,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -131,72 +129,93 @@ class _CalculatorState extends State<Calculator> {
         title: Text('Calculator'),
         backgroundColor: Colors.black,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5),
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Text(
-                      output,
-                      textAlign: TextAlign.left,
+            Expanded(
+              flex: 2,
+              child: Container(
+                padding: EdgeInsets.all(16),
+                alignment: Alignment.bottomRight,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      _equation,
+                      style: TextStyle(color: Colors.grey, fontSize: 24),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      _output,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 48.0,
+                        fontSize: 48,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  )
-                ],
+                  ],
+                ),
               ),
             ),
-            Row(
-              children: [
-                buildButton("C", Colors.grey, Colors.black),
-                buildButton("+/-", Colors.grey, Colors.black),
-                buildButton("%", Colors.grey, Colors.black),
-                buildButton("÷", Colors.orange, Colors.white),
-              ],
-            ),
-            Row(
-              children: [
-                buildButton("7", Colors.grey[850]!, Colors.white),
-                buildButton("8", Colors.grey[850]!, Colors.white),
-                buildButton("9", Colors.grey[850]!, Colors.white),
-                buildButton("×", Colors.orange, Colors.white),
-              ],
-            ),
-            Row(
-              children: [
-                buildButton("4", Colors.grey[850]!, Colors.white),
-                buildButton("5", Colors.grey[850]!, Colors.white),
-                buildButton("6", Colors.grey[850]!, Colors.white),
-                buildButton("-", Colors.orange, Colors.white),
-              ],
-            ),
-            Row(
-              children: [
-                buildButton("1", Colors.grey[850]!, Colors.white),
-                buildButton("2", Colors.grey[850]!, Colors.white),
-                buildButton("3", Colors.grey[850]!, Colors.white),
-                buildButton("+", Colors.orange, Colors.white),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: buildButton("0", Colors.grey[850]!, Colors.white),
+            Expanded(
+              flex: 5,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          _buildButton("C", Colors.grey, Colors.black),
+                          _buildButton("+/-", Colors.grey, Colors.black),
+                          _buildButton("%", Colors.grey, Colors.black),
+                          _buildButton("÷", Colors.orange, Colors.white),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          _buildButton("7", Colors.grey[850]!, Colors.white),
+                          _buildButton("8", Colors.grey[850]!, Colors.white),
+                          _buildButton("9", Colors.grey[850]!, Colors.white),
+                          _buildButton("×", Colors.orange, Colors.white),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          _buildButton("4", Colors.grey[850]!, Colors.white),
+                          _buildButton("5", Colors.grey[850]!, Colors.white),
+                          _buildButton("6", Colors.grey[850]!, Colors.white),
+                          _buildButton("-", Colors.orange, Colors.white),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          _buildButton("1", Colors.grey[850]!, Colors.white),
+                          _buildButton("2", Colors.grey[850]!, Colors.white),
+                          _buildButton("3", Colors.grey[850]!, Colors.white),
+                          _buildButton("+", Colors.orange, Colors.white),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          _buildButton("0", Colors.grey[850]!, Colors.white),
+                          _buildButton(".", Colors.grey[850]!, Colors.white),
+                          _buildButton("=", Colors.orange, Colors.white),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                buildButton(".", Colors.grey[850]!, Colors.white),
-                buildButton("=", Colors.orange, Colors.white),
-              ],
+              ),
             ),
           ],
         ),
