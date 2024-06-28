@@ -25,15 +25,20 @@ A simple calculator app built with Flutter.
 - Basic arithmetic operations (+, -, ×, ÷)
 - Decimal point support
 - Delete button to remove the last digit
+- Sign In and Sign Up screens
+- Tab-based navigation with multiple screens (SignIn, SignUp, and Calculator)
+- Navigation drawer with a hamburger menu icon and slide-out animation
 
 ## Screenshots
 
-![Calculator App Screenshot](assets/images/calculator.jpg)
+![Calculator Screen](assets/images/calc.jpg)
+![Sign Up Screen](assets/images/signup.jpg)
+![Sign In Screen](assets/images/signin.jpg)
+![Navigation Drawer](assets/images/p1.jpg)
 
 ## Getting Started
 
 1. Clone the repository:
    ```sh
    git clone https://github.com/SethLoveByiringiro/flutter_calculator_app.git
-   cd your-repo-name
->>>>>>> fbdb82ca65494a6145c401895be37793bf16c94b
+   cd flutter_calculator_app
