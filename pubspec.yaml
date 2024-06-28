@@ -55,7 +55,7 @@ flutter:
 
   assets:
     - assets/images/calculator.jpg
-    - assets/images/p1.jpg
+    - assets/images/pg1.jpg
     - assets/images/calc.jpg
     - assets/images/signup.jpg
     - assets/images/signin.jpg
