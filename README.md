@@ -34,7 +34,7 @@ A simple calculator app built with Flutter.
 ![Calculator Screen](assets/images/calc.jpg)
 ![Sign Up Screen](assets/images/signup.jpg)
 ![Sign In Screen](assets/images/signin.jpg)
-![Navigation Drawer](assets/images/p1.jpg)
+![Navigation Drawer](assets/images/pg1.jpg)
 
 ## Getting Started
 
